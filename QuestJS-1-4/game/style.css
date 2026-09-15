@@ -1,0 +1,53 @@
+body {
+  background-color: black;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  transition: background-image 0.8s ease-in-out;
+}
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+body {
+  transition: background-image 0.8s ease-in-out;
+}
+p, h1, h2, h3, h4, h5, h6 {
+  background-color: #ffffff;
+  padding: 1em;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+#output * {
+  background-color: #ffffff;
+  padding: 0.6em 0.8em;
+}
+
+#output {
+  max-height: 85vh;
+  overflow-y: auto;
+}
+#output {
+  background: rgba(255,255,255,0.95);
+  padding: 1em;
+  border-radius: 10px;
+  max-width: 900px;
+  margin: auto;
+}
+#textbox {
+  background-color: #ffffff;        /* solid white */
+  color: #000000;                   /* black text */
+  border: 2px solid #333333;        /* dark border */
+  border-radius: 8px;               /* rounded corners */
+  padding: 10px 14px;               /* comfortable spacing */
+  font-size: 1.1em;                 /* slightly larger text */
+  width: 100%;                      /* full width of input area */
+  max-width: 600px;                 /* but not too wide */
+  box-sizing: border-box;           /* prevents overflow */
+  margin: 20px auto;                /* centers the box */
+  display: block;                   /* ensures centering works */
+  box-shadow: 0 0 10px rgba(0,0,0,0.4); /* makes it pop */
+}
