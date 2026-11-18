@@ -108,18 +108,21 @@ createItem("holmes", NPC(false), {
   examine:"Holmes stands before the fire, looking you over in his singular introspective fashion.",
   talkto:function() {
     if (!game.story.noteExamined) {
-      return "Holmes turns toward the pink-tinted note. \"Read it aloud, Watson.\""
+      msg("Holmes turns toward the pink-tinted note. \"Read it aloud, Watson.\"")
     }
-    if (!game.story.visitorArrived) {
-      return "Holmes glances toward the stairs. \"He is due at a quarter to eight. Sit down and give us your best attention.\""
+    else if (!game.story.visitorArrived) {
+      msg("Holmes glances toward the stairs. \"He is due at a quarter to eight. Sit down and give us your best attention.\"")
     }
-    if (!game.story.caseAccepted) {
-      return "Holmes closes his eyes. \"You may say before this gentleman anything which you may say to me.\""
+    else if (!game.story.caseAccepted) {
+      msg("Holmes closes his eyes. \"You may say before this gentleman anything which you may say to me.\"")
     }
-    if (!game.story.planExplained) {
-      return "Holmes has changed into a groom. \"The photograph is cabinet size. It must be in Miss Adler's house, where she can lay her hands upon it.\""
+    else if (!game.story.planExplained) {
+      msg("Holmes has changed into a groom. \"The photograph is cabinet size. It must be in Miss Adler's house, where she can lay her hands upon it.\"")
     }
-    return "Holmes folds his hands. \"We must be at Briony Lodge by seven. You are to remain neutral, watch me, and throw the smoke-rocket on my signal.\""
+    else {
+      msg("Holmes folds his hands. \"We must be at Briony Lodge by seven. You are to remain neutral, watch me, and throw the smoke-rocket on my signal.\"")
+    }
+    return world.SUCCESS
   },
   canTalk:true,
   askOptions:[
@@ -157,7 +160,7 @@ createItem("holmes", NPC(false), {
 createItem("irene", NPC(true), {
   loc:"BrionyLodge", alias:"Irene Adler", properName:true,
   examine:"Irene Adler has the face of the most beautiful of women and the mind of the most resolute of men.",
-  talkto:function() { addSuspicion(1); return "Irene smiles without warmth. \"You are a friend of Mr. Holmes, I presume?\"" },
+  talkto:function() { addSuspicion(1); msg("Irene smiles without warmth. \"You are a friend of Mr. Holmes, I presume?\""); return world.SUCCESS },
   askOptions:[
     {name:"schedule", msg:"Irene's eyes sharpen. \"A woman may drive when she pleases, Doctor.\"", script:function() { addSuspicion(1) }},
     {name:"norton", msg:"\"Mr. Norton is a gentleman and my counsel.\" Her hand closes over a small key."},
@@ -172,7 +175,8 @@ createItem("king", NPC(false), {
     game.kingMet = true
     game.story.visitorArrived = true
     game.story.objective = "Ask the King about Irene Adler and accept the case."
-    return "The masked visitor tears off his disguise. \"I am the King. Why should I attempt to conceal it?\""
+    msg("The masked visitor tears off his disguise. \"I am the King. Why should I attempt to conceal it?\"")
+    return world.SUCCESS
   },
   askOptions:[
     {name:"identity", msg:"\"Wilhelm Gottsreich Sigismond von Ormstein, Grand Duke of Cassel-Felstein, and hereditary King of Bohemia.\""},
@@ -186,7 +190,15 @@ createItem("king", NPC(false), {
 createItem("godfrey", NPC(false), {
   loc:"TheTemple", alias:"Godfrey Norton", properName:true,
   examine:"A dark, handsome lawyer with an aquiline nose and the air of a man always late.",
-  talkto:function() { return game.followedNorton ? "Norton grips your hand. \"You witnessed the wedding; you understand why we must leave.\"" : "Norton glances at his watch. \"I have no time to spare.\"" },
+  talkto:function() {
+    if (game.followedNorton) {
+      msg("Norton grips your hand. \"You witnessed the wedding; you understand why we must leave.\"")
+    }
+    else {
+      msg("Norton glances at his watch. \"I have no time to spare.\"")
+    }
+    return world.SUCCESS
+  },
   agenda:["caseClock:11:30", "moveTo:BrionyLodge", "msg:Godfrey Norton arrives at Briony Lodge in a hansom cab.", "wait:1", "caseClock:11:45", "moveTo:StMonicasChurch", "msg:Norton shouts for a cab to St. Monica's Church."],
 })
 createItem("ostler", NPC(false), {loc:"TheMews", alias:"ostler", talkto:"The ostler accepts a coin. \"Miss Adler drives out at five and returns sharp at seven. The lawyer calls daily.\""})
