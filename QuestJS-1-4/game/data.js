@@ -165,6 +165,9 @@ createItem("irene", NPC(true), {
     {name:"schedule", msg:"Irene's eyes sharpen. \"A woman may drive when she pleases, Doctor.\"", script:function() { addSuspicion(1) }},
     {name:"norton", msg:"\"Mr. Norton is a gentleman and my counsel.\" Her hand closes over a small key."},
   ],
+  tellOptions:[
+    {name:"holmes", msg:"Irene becomes watchful. \"Mr. Holmes is very clever, but he has met his match in me.\"", script:function() { addSuspicion(5) }},
+  ],
   reactions:[{trigger:function() { return game.suspicion >= 3 }, script:function() { msg("Irene has begun to suspect that Baker Street is watching her."); return {name:"irene_suspicious"} }}],
   agenda:["caseClock:17:0", "moveTo:SerpentineAvenue", "msg:Irene leaves Briony Lodge for her five o'clock drive.", "caseClock:19:0", "moveTo:BrionyLodge", "msg:Irene returns at seven, alert and composed."],
 })
@@ -185,25 +188,61 @@ createItem("king", NPC(false), {
     {name:"mission", script:function() { game.story.kingFavor += 5 }, msg:"\"Recover the photograph before Monday. Your Majesty shall pay anything.\""},
     {name:"money", msg:"The King produces a chamois bag. \"There are three hundred pounds in gold and seven hundred in notes.\""},
   ],
+  tellOptions:[
+    {name:"adler", msg:"The King grips his cloak. \"Miss Adler is both the victim and keeper of a dangerous secret.\""},
+  ],
   agenda:["caseClock:20:0", "msg:The masked visitor removes his disguise. \"I am the King. Why conceal it?\""]
 })
 createItem("godfrey", NPC(false), {
   loc:"TheTemple", alias:"Godfrey Norton", properName:true,
   examine:"A dark, handsome lawyer with an aquiline nose and the air of a man always late.",
   talkto:function() {
-    if (game.followedNorton) {
-      msg("Norton grips your hand. \"You witnessed the wedding; you understand why we must leave.\"")
-    }
-    else {
-      msg("Norton glances at his watch. \"I have no time to spare.\"")
-    }
+    if (game.followedNorton) msg("Norton grips your hand. \"You witnessed the wedding; you understand why we must leave.\"")
+    else msg("Norton glances at his watch. \"I have no time to spare.\"")
     return world.SUCCESS
   },
-  agenda:["caseClock:11:30", "moveTo:BrionyLodge", "msg:Godfrey Norton arrives at Briony Lodge in a hansom cab.", "wait:1", "caseClock:11:45", "moveTo:StMonicasChurch", "msg:Norton shouts for a cab to St. Monica's Church."],
+  askOptions:[
+    {name:"wedding", msg:"\"Drive to St. Monica's Church!\" Norton checks his watch. \"Only three minutes remain before the licence becomes useless.\""},
+  ],
+  tellOptions:[
+    {name:"photograph", test:function() { return game.photoFound }, msg:"Norton nods grimly. \"We have safeguarded what matters most.\""},
+  ],
 })
-createItem("ostler", NPC(false), {loc:"TheMews", alias:"ostler", talkto:"The ostler accepts a coin. \"Miss Adler drives out at five and returns sharp at seven. The lawyer calls daily.\""})
-createItem("clergyman", NPC(false), {loc:"StMonicasChurch", alias:"clergyman", talkto:"The clergyman sighs. \"A marriage licence had some informality. We still require a witness.\""})
-createItem("cabman", NPC(false), {loc:"SerpentineAvenue", alias:"cabman", talkto:"The cabman grins. \"A half-sovereign gets a man to the church in twenty minutes.\""})
+createItem("ostler", NPC(false), {
+  loc:"TheMews", alias:"ostler", properName:true,
+  examine:"The ostler knows every carriage, horse, and gossip of the Serpentine mews.",
+  talkto:"The ostler accepts a coin. \"Miss Adler drives out at five and returns sharp at seven. The lawyer calls daily.\"",
+  askOptions:[
+    {name:"adler", msg:"\"Miss Adler has all the young men turning their heads. She drives at five and returns at seven.\""},
+    {name:"norton", msg:"\"Mr. Godfrey Norton visits the Temple, but he calls on Miss Adler once or twice each day.\""},
+  ],
+  tellOptions:[
+    {name:"briony lodge", msg:"The ostler points toward the garden wall. \"The coach-house and the sitting-room window are only across the lane.\""},
+  ],
+})
+createItem("clergyman", NPC(false), {
+  loc:"StMonicasChurch", alias:"clergyman", properName:true,
+  examine:"The surpliced clergyman looks flustered by a complication in the marriage licence.",
+  talkto:"The clergyman sighs. \"A marriage licence had some informality. We still require a witness.\"",
+  askOptions:[
+    {name:"wedding", msg:"\"The ceremony requires a witness. It must be done at once, or it will not be legal.\""},
+  ],
+  tellOptions:[
+    {name:"godfrey norton", msg:"The clergyman nods toward the waiting bridegroom. \"Mr. Norton has been in great haste.\""},
+  ],
+})
+createItem("cabman", NPC(false), {
+  loc:"SerpentineAvenue", alias:"cabman", properName:true,
+  examine:"The cabman watches the street and has likely driven most of the people involved in the case.",
+  talkto:"The cabman grins. \"A half-sovereign gets a man to the church in twenty minutes.\"",
+  askOptions:[
+    {name:"norton", msg:"\"Godfrey Norton? Fastest fare I ever had: first to Regent Street, then St. Monica's.\""},
+    {name:"adler", msg:"\"A neat landau brought Miss Adler to Briony Lodge each evening.\""},
+  ],
+  tellOptions:[
+    {name:"church", msg:"The cabman points west. \"St. Monica's is twenty minutes away at a decent pace.\""},
+  ],
+})
 
 createItem("pink_note", TAKEABLE(), {
   loc:"Bakerstreet", alias:"pink-tinted note",
@@ -213,9 +252,12 @@ createItem("pink_note", TAKEABLE(), {
       game.story.cluesFound++
       game.story.visitorArrived = getCaseMinutes() >= 19 * 60 + 45
       game.story.objective = "Ask Holmes about the letter, then wait for the masked visitor."
-      return "You read: 'There will call upon you to-night, at a quarter to eight o'clock, a gentleman who desires to consult you upon a matter of the very deepest moment.' The paper bears 'Egria' and a German maker's mark. Holmes says, 'It is in a German-speaking country—in Bohemia.'"
+      msg("You read: 'There will call upon you to-night, at a quarter to eight o'clock, a gentleman who desires to consult you upon a matter of the very deepest moment.' The paper bears 'Egria' and a German maker's mark. Holmes says, 'It is in a German-speaking country—in Bohemia.'")
     }
-    return "Bohemian paper carries a German maker's mark. The visitor is due at a quarter to eight."
+    else {
+      msg("Bohemian paper carries a German maker's mark. The visitor is due at a quarter to eight.")
+    }
+    return world.SUCCESS
   },
 })
 
