@@ -106,7 +106,7 @@ createItem("holmes", NPC(false), {
     game.deductions = (game.deductions || 0) + 1
     return "Holmes deduces: " + deductions[item.name]
   },
-  reactions:[{trigger:function() { return player.isHere() }, script:function() { msg("Holmes glances at you with a quick, subtle appraisal.") }}],
+  reactions:[{trigger:function() { return player.isHere() }, script:function() { msg("") }}],
   movingMsg:function(exit) { msg("Holmes strides " + exit.dir + ", hands clasped behind him.") },
   agenda:["caseClock:10:0", "msg:Holmes taps the pink note. \"The King will come shortly.\"", "wait:1", "msg:Holmes paces swiftly, head sunk upon his chest.", "wait:2", "caseClock:17:0", "msg:Holmes checks the street. \"Seven o'clock will be our hour.\""],
 })
