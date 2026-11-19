@@ -114,7 +114,7 @@ createItem("holmes", NPC(false), {
       msg("Holmes glances toward the stairs. \"He is due at a quarter to eight. Sit down and give us your best attention.\"")
     }
     else if (!game.story.caseAccepted) {
-      msg("Holmes closes his eyes. \"You may say before this gentleman anything which you may say to me.\"")
+      msg("Holmes closes his eyes. \"You may say before this gentleman anything which you may say to me. You may also say simply: ACCEPT CASE.\"")
     }
     else if (!game.story.planExplained) {
       msg("Holmes has changed into a groom. \"The photograph is cabinet size. It must be in Miss Adler's house, where she can lay her hands upon it.\"")
@@ -126,7 +126,7 @@ createItem("holmes", NPC(false), {
   },
   canTalk:true,
   askOptions:[
-    {name:"case", msg:"\"It is a capital mistake to theorize before one has data. First, tell me what you observe.\""},
+    {name:"case", msg:"\"It is a capital mistake to theorize before one has data. After you hear the King, type ACCEPT CASE to begin the investigation.\""},
     {name:"deduction", msg:"\"You see, but you do not observe. Your left shoe is scored by the mud you scraped away, and iodoform tells me you are in practice again.\""},
     {name:"letter", test:function() { return game.story.noteExamined }, msg:"\"The writer is German, Bohemian, and wealthy. The words are peculiar; the masked visitor will resolve our doubts.\""},
     {name:"king", test:function() { return game.story.kingRevealed }, msg:"\"Your Majesty had not spoken before I knew whom I addressed. Wilhelm Gottsreich Sigismond von Ormstein, hereditary King of Bohemia.\""},
@@ -177,8 +177,10 @@ createItem("king", NPC(false), {
   talkto:function() {
     game.kingMet = true
     game.story.visitorArrived = true
-    game.story.objective = "Ask the King about Irene Adler and accept the case."
-    msg("The masked visitor tears off his disguise. \"I am the King. Why should I attempt to conceal it?\"")
+    game.story.kingRevealed = true
+    game.story.cluesFound++
+    game.story.objective = "Accept the mission: use ACCEPT CASE or decline it with DECLINE CASE."
+    msg("The masked visitor tears off his disguise. \"I am the King. Why should I attempt to conceal it? Five years ago I met Irene Adler. She possesses a compromising photograph. Accept the case, Watson.\"")
     return world.SUCCESS
   },
   askOptions:[
@@ -266,13 +268,15 @@ new Cmd('AcceptCase', {
   script:function() {
     if (!game.story.kingRevealed) return failedmsg("Ask the King about Adler and the photograph before accepting the mission.")
     game.story.caseAccepted = true
+    game.story.planExplained = true
     game.story.kingFavor += 10
     supportHolmes(10)
     game.story.act = 2
-    game.story.objective = "Follow the investigation: examine the mews, observe Briony Lodge, and follow Norton or Irene."
-    msg("Holmes accepts the commission. 'If you will be good enough to call to-morrow afternoon at three o'clock, I should like to chat this little matter over with you.'")
+    game.story.objective = "Investigate: go north to The Mews and speak with the ostler, then OBSERVE BRIONY LODGE."
+    msg("Holmes accepts the commission. 'We have three days, Watson, and one photograph to find.'")
+    msg("He explains the plan: \"Visit the mews, discover the habits of Miss Adler and Mr. Norton, then observe Briony Lodge.\"")
     completeAct1Objective()
-    advanceTime(10)
+    advanceTime(780)
     return world.SUCCESS
   },
 })
