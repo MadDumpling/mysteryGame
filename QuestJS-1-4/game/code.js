@@ -1,7 +1,6 @@
 "use strict"
 
-// Story clock: all canon events start at 7:00 AM.
-// One successful player turn advances one minute through QuestJS.
+// Agenda targets are clock times within the current case day.
 agenda.caseClock = function(npc, arr) {
 	const hour = parseInt(arr.shift(), 10)
 	const minute = parseInt(arr.shift() || "0", 10)
@@ -13,11 +12,9 @@ agenda.caseClock = function(npc, arr) {
 	return true
 }
 
-// Story clock begins with Watson's 7 PM return to Baker Street.
+// Watson returns on Day 1, and the investigation begins on Day 2 at 8:00 AM.
 function getCaseMinutes() {
-	const startMinutes = 19 * 60
-	const elapsedMinutes = Math.floor(game.elapsedTime / 60)
-	return startMinutes + elapsedMinutes
+	return game.story && game.story.time !== undefined ? game.story.time : 19 * 60
 }
 
 function getCasePeriod(minutes) {
@@ -39,20 +36,24 @@ function formatCaseTime(minutes) {
 }
 
 function getCaseTimeline() {
-	const minutes = getCaseMinutes()
-	return getCasePeriod(minutes) + " - " + formatCaseTime(minutes)
+	return "Day " + (game.story.day || 1) + " - " + getCasePeriod() + " - " + formatCaseTime()
 }
 
 function advanceTime(minutes) {
 	const amount = Math.max(0, parseInt(minutes, 10) || 0)
-	game.elapsedTime += amount * 60
-	game.story.time = getCaseMinutes()
+	game.story.time += amount
+	world.update()
+}
+
+function advanceToNextDay(hour, minute) {
+	game.story.day = (game.story.day || 1) + 1
+	game.story.time = (hour === undefined ? 8 : hour) * 60 + (minute || 0)
+	game.elapsedTime = 0
 	world.update()
 }
 
 function addSuspicion(amount) {
 	game.story.suspicion = Math.max(0, (game.story.suspicion || 0) + amount)
-	game.suspicion = game.story.suspicion
 }
 
 function supportHolmes(amount) {
