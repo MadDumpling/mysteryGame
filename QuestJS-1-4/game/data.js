@@ -185,6 +185,20 @@ createItem("king", NPC(false), {
     {name:"photograph", regex:/^(photograph|photo)$/i, msg:"\"It is a cabinet photograph. We have tried to buy it, steal it, and search for it. She will not sell.\""},
     {name:"mission", regex:/^mission$/i, script:function() { game.story.kingFavor += 5 }, msg:"\"Recover the photograph before Monday. Your Majesty shall pay anything.\""},
     {name:"money", regex:/^money$/i, msg:"The King produces a chamois bag. \"There are three hundred pounds in gold and seven hundred in notes.\""},
+    {
+      script:function(params) {
+        const topic = ((params && params.text ? params.text : "") + " " + (params && params.text2 ? params.text2 : "")).toLowerCase()
+        if (/adler|irene|photograph|photo/.test(topic)) {
+          game.story.kingRevealed = true
+          game.story.cluesFound++
+          supportKing(5)
+          game.story.objective = "Accept the mission or decline it by speaking to Holmes."
+          msg("The King explains: \"Some five years ago, I made the acquaintance of Irene Adler. She possesses a photograph that could ruin my approaching marriage.\"")
+          return
+        }
+        msg("The King studies you in silence. Ask him about Adler, the photograph, the mission, or his identity.")
+      }
+    },
   ],
   agenda:["caseClock:20:0", "msg:The masked visitor removes his disguise. \"I am the King. Why conceal it?\""]
 })
